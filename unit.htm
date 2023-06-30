@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .converter-container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      background-color: #b4b4b4;
+      box-shadow: 0 0 10px rgba(60, 60, 60, 0.816);
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #fff;
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-group label {
+      flex-basis: 20%;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: right;
+      color: #fff;
+      margin-right: 10px;
+    }
+
+    .input-group select,
+    .input-group input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(65, 65, 65, 0.816);
+    }
+
+    .converter-container button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #1d1d1d;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    .converter-container button:hover {
+      background-color: #45a049;
+    }
+
+    .converter-container button:active {
+      background-color: #3e8e41;
+    }
+
+    #output-container {
+      margin-top: 20px;
+    }
+
+    #output-value {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+
+    #conversion-formula {
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="converter-container">
+    <h2>Unit Converter</h2>
+    <div class="input-group">
+      <label for="unit-type">Select Unit Type:</label>
+      <select id="unit-type">
+        <option value="length">Length</option>
+        <option value="volume">Volume</option>
+        <option value="mass">Mass</option>
+        <option value="speed">Speed</option>
+        <option value="time">Time</option>
+        <option value="area">Area</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label for="from-unit">From:</label>
+      <select id="from-unit"></select>
+    </div>
+    <div class="input-group">
+      <label for="to-unit">To:</label>
+      <select id="to-unit"></select>
+    </div>
+    <div class="input-group">
+      <label for="input-value">Value:</label>
+      <input type="number" id="input-value" placeholder="Enter value">
+    </div>
+    <button id="convert-button">Convert</button>
+    <div id="output-container">
+      <input type="text" id="output-value" placeholder="Result" readonly>
+      <div id="conversion-formula"></div>
+    </div>
+  </div>
+  <script>
+    const unitTypeSelect = document.getElementById("unit-type");
+    const fromUnitSelect = document.getElementById("from-unit");
+    const toUnitSelect = document.getElementById("to-unit");
+    const inputValue = document.getElementById("input-value");
+    const convertButton = document.getElementById("convert-button");
+    const outputValue = document.getElementById("output-value");
+    const conversionFormula = document.getElementById("conversion-formula");
+
+    // Conversion formulas for different unit types
+    const conversionFormulas = {
+      length: {
+        meter: 1,
+        kilometer: 0.001,
+        centimeter: 100,
+        millimeter: 1000,
+        mile: 0.000621371,
+        yard: 1.09361,
+        foot: 3.28084,
+        inch: 39.3701,
+      },
+      volume: {
+        liter: 1,
+        milliliter: 1000,
+        cubicMeter: 0.001,
+        gallon: 0.264172,
+        quart: 1.05669,
+        pint: 2.11338,
+        cup: 4.22675,
+        fluidOunce: 33.814,
+      },
+      mass: {
+        gram: 1,
+        kilogram: 0.001,
+        milligram: 1000,
+        ounce: 0.035274,
+        pound: 0.00220462,
+        tonne: 1e-6,
+      },
+      speed: {
+        meterPerSecond: 1,
+        kilometerPerHour: 3.6,
+        milePerHour: 2.23694,
+        knot: 1.94384,
+      },
+      time: {
+        second: 1,
+        minute: 1 / 60,
+        hour: 1 / 3600,
+        day: 1 / 86400,
+        week: 1 / 604800,
+        month: 1 / 2629800,
+        year: 1 / 31557600,
+      },
+      area: {
+        squareMeter: 1,
+        squareKilometer: 1e-6,
+        squareMile: 3.861e-7,
+        squareYard: 1.19599,
+        squareFoot: 10.7639,
+        squareInch: 1550.0031,
+        hectare: 0.0001,
+        acre: 0.000247105,
+      },
+    };
+
+    // Populate the "from" and "to" unit selects based on the selected unit type
+    function populateUnitSelects() {
+      const unitType = unitTypeSelect.value;
+      const units = Object.keys(conversionFormulas[unitType]);
+
+      fromUnitSelect.innerHTML = "";
+      toUnitSelect.innerHTML = "";
+
+      units.forEach((unit) => {
+        const option1 = document.createElement("option");
+        option1.value = unit;
+        option1.textContent = unit;
+        fromUnitSelect.appendChild(option1);
+
+        const option2 = document.createElement("option");
+        option2.value = unit;
+        option2.textContent = unit;
+        toUnitSelect.appendChild(option2);
+      });
+    }
+
+    // Convert the input value from the "from" unit to the "to" unit
+    function convertValue() {
+      const unitType = unitTypeSelect.value;
+      const fromUnit = fromUnitSelect.value;
+      const toUnit = toUnitSelect.value;
+      const value = parseFloat(inputValue.value);
+
+      if (isNaN(value)) {
+        outputValue.value = "Invalid input";
+        conversionFormula.textContent = "";
+        return;
+      }
+
+      if (!conversionFormulas[unitType][fromUnit] || !conversionFormulas[unitType][toUnit]) {
+        outputValue.value = "Invalid unit";
+        conversionFormula.textContent = "";
+        return;
+      }
+
+      const result = value * (conversionFormulas[unitType][toUnit] / conversionFormulas[unitType][fromUnit]);
+
+      outputValue.value = result.toFixed(2);
+      conversionFormula.textContent = `${value} ${fromUnit} = ${result.toFixed(2)} ${toUnit}`;
+    }
+
+    // Event listeners
+    unitTypeSelect.addEventListener("change", populateUnitSelects);
+    convertButton.addEventListener("click", convertValue);
+  </script>
+</body>
+</html>
