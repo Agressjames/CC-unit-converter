@@ -10,7 +10,7 @@
       background-color: #f2f2f2;
     }
 
-    .converter-container {
+    .container {
       max-width: 400px;
       margin: 100px auto;
       padding: 20px;
@@ -26,13 +26,13 @@
       font-size: 24px;
     }
 
-    .input-group {
+    .input {
       margin-bottom: 20px;
       display: flex;
       align-items: center;
     }
 
-    .input-group label {
+    .input label {
       flex-basis: 20%;
       font-size: 16px;
       font-weight: bold;
@@ -41,8 +41,8 @@
       margin-right: 10px;
     }
 
-    .input-group select,
-    .input-group input {
+    .input select,
+    .input input {
       flex: 1;
       padding: 10px;
       font-size: 16px;
@@ -51,7 +51,7 @@
       box-shadow: 0 0 10px rgba(65, 65, 65, 0.816);
     }
 
-    .converter-container button {
+    .container button {
       display: inline-block;
       padding: 10px 20px;
       background-color: #4CAF50;
@@ -63,11 +63,11 @@
       transition: background-color 0.3s;
     }
 
-    .converter-container button:hover {
+    .container button:hover {
       background-color: #45a049;
     }
 
-    .converter-container button:active {
+    .container button:active {
       background-color: #3e8e41;
     }
 
@@ -75,7 +75,7 @@
       margin-top: 20px;
     }
 
-    #output-value {
+    #opt-value {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -90,9 +90,9 @@
   </style>
 </head>
 <body>
-  <div class="converter-container">
-    <h2>Unit Converter</h2>
-    <div class="input-group">
+  <div class="container">
+    <h2>Simple Unit Converter</h2>
+    <div class="input">
       <label for="unit-type">Select Unit Type:</label>
       <select id="unit-type">
         <option value="length">Length</option>
@@ -103,21 +103,21 @@
         <option value="area">Area</option>
       </select>
     </div>
-    <div class="input-group">
+    <div class="input">
       <label for="from-unit">From:</label>
       <select id="from-unit"></select>
     </div>
-    <div class="input-group">
+    <div class="input">
       <label for="to-unit">To:</label>
       <select id="to-unit"></select>
     </div>
-    <div class="input-group">
+    <div class="input">
       <label for="input-value">Value:</label>
       <input type="number" id="input-value" placeholder="Enter value">
     </div>
     <button id="convert-button">Convert</button>
     <div id="output-container">
-      <input type="text" id="output-value" placeholder="Result" readonly>
+      <input type="text" id="opt-value" placeholder="Result" readonly>
       <div id="conversion-formula"></div>
     </div>
   </div>
@@ -127,7 +127,7 @@
     const toUnitSelect = document.getElementById("to-unit");
     const inputValue = document.getElementById("input-value");
     const convertButton = document.getElementById("convert-button");
-    const outputValue = document.getElementById("output-value");
+    const optValue = document.getElementById("opt-value");
     const conversionFormula = document.getElementById("conversion-formula");
 
     // Conversion formulas for different unit types
@@ -216,20 +216,20 @@
       const value = parseFloat(inputValue.value);
 
       if (isNaN(value)) {
-        outputValue.value = "Invalid input";
+        optValue.value = "Invalid input";
         conversionFormula.textContent = "";
         return;
       }
 
       if (!conversionFormulas[unitType][fromUnit] || !conversionFormulas[unitType][toUnit]) {
-        outputValue.value = "Invalid unit";
+        optValue.value = "Invalid unit";
         conversionFormula.textContent = "";
         return;
       }
 
       const result = value * (conversionFormulas[unitType][toUnit] / conversionFormulas[unitType][fromUnit]);
 
-      outputValue.value = result.toFixed(2);
+      optValue.value = result.toFixed(2);
       conversionFormula.textContent = `${value} ${fromUnit} = ${result.toFixed(2)} ${toUnit}`;
     }
 
